@@ -13,7 +13,8 @@ const DEFAULTS: AppSettings = {
   autoSave: true,
   defaultExportFormat: 'auto',
   libraryDir: null,
-  mirrorInsert: false
+  mirrorInsert: false,
+  hideStarPrompt: false
 }
 const RECENT_LIMIT = 30
 
@@ -34,7 +35,9 @@ export async function getSettings(): Promise<AppSettings> {
           ? raw.defaultExportFormat
           : DEFAULTS.defaultExportFormat,
       libraryDir: typeof raw.libraryDir === 'string' ? raw.libraryDir : null,
-      mirrorInsert: typeof raw.mirrorInsert === 'boolean' ? raw.mirrorInsert : DEFAULTS.mirrorInsert
+      mirrorInsert: typeof raw.mirrorInsert === 'boolean' ? raw.mirrorInsert : DEFAULTS.mirrorInsert,
+      hideStarPrompt:
+        typeof raw.hideStarPrompt === 'boolean' ? raw.hideStarPrompt : DEFAULTS.hideStarPrompt
     }
   } catch {
     return { ...DEFAULTS }

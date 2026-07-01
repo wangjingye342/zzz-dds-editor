@@ -5,6 +5,7 @@ import { LibraryPanel } from './library'
 import { setupLayersPanel } from './layersPanel'
 import { showDdsPicker, showRecentPicker } from './modPicker'
 import { setupSettingsPanel } from './settingsPanel'
+import { setupStarPrompt } from './starPrompt'
 import { ddsToDataURL, ddsToPreviewCanvas, ddsToOpaqueCanvasWithAlpha } from './ddsDecode'
 import { progress } from './progress'
 import type { DdsMeta, ProjectFile, DdsEntry, ModScan, RecentRecord } from '@shared/types'
@@ -234,6 +235,8 @@ const settings = setupSettingsPanel({
 $('btn-settings').addEventListener('click', () => void settings.open())
 btnAlwaysOnTop.addEventListener('click', () => void toggleAlwaysOnTop())
 
+const starPrompt = setupStarPrompt()
+
 let alwaysOnTop = false
 async function toggleAlwaysOnTop(): Promise<void> {
   try {
@@ -262,6 +265,7 @@ async function initApp(): Promise<void> {
     mirrorInsert = s.mirrorInsert
     mirrorCheckbox.checked = s.mirrorInsert
     if (s.libraryDir) await loadLibrary(s.libraryDir, false)
+    starPrompt.maybeShow(s.hideStarPrompt)
   } catch {
     /* 读取失败按默认处理 */
   }

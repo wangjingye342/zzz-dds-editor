@@ -635,3 +635,179 @@ button.mini {
   width: 100%;
   max-width: none;
 }
+
+/* ============ 启动求 Star 弹窗 ============ */
+.star-overlay {
+  background: rgba(6, 8, 12, 0.72);
+  backdrop-filter: blur(4px);
+}
+.star-card {
+  position: relative;
+  width: min(420px, 92vw);
+  padding: 32px 30px 26px;
+  text-align: center;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #24262b 0%, #1c1d21 100%);
+  border: 1px solid #3a3d44;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  overflow: hidden;
+  animation: star-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes star-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* 顶部柔和金色极光 */
+.star-aurora {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  width: 320px;
+  height: 240px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(255, 197, 61, 0.28), transparent 70%);
+  pointer-events: none;
+}
+.star-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.star-x:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+.star-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #ffd76a 0%, #f5a623 55%, #f0900f 100%);
+  box-shadow:
+    0 8px 24px rgba(245, 166, 35, 0.45),
+    0 0 0 6px rgba(245, 166, 35, 0.12);
+  animation: star-bob 2.6s ease-in-out infinite;
+}
+@keyframes star-bob {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-4deg);
+  }
+}
+.star-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f5f6f8;
+  letter-spacing: 0.3px;
+}
+.star-sub {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text-dim);
+}
+.star-sub b {
+  color: #ffcf5c;
+  font-weight: 600;
+}
+.star-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  margin: 0 auto 22px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.star-repo svg {
+  flex: 0 0 auto;
+  opacity: 0.85;
+}
+.star-repo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.star-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3a2600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffd76a 0%, #f5a623 100%);
+  box-shadow: 0 10px 26px rgba(245, 166, 35, 0.38);
+  transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
+}
+.star-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 14px 32px rgba(245, 166, 35, 0.5);
+}
+.star-cta:active {
+  transform: translateY(0);
+}
+.star-later {
+  display: block;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.star-later:hover {
+  color: var(--text);
+}
+.star-dont {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.star-dont input {
+  cursor: pointer;
+}

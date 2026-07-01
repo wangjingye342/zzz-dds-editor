@@ -132,6 +132,8 @@ export interface AppSettings {
   libraryDir: string | null
   /** 勾选后，点击/拖拽插入的新贴图自动水平镜像 */
   mirrorInsert: boolean
+  /** 启动时的求 Star 弹窗：为 true 时不再弹出 */
+  hideStarPrompt: boolean
 }
 
 /** 为某张 mod DDS 准备/解析编辑记录的结果 */
@@ -218,6 +220,8 @@ export interface Api {
   updateSettings: (partial: Partial<AppSettings>) => Promise<AppSettings>
   /** 在系统文件管理器中打开某个路径（设置面板里「打开目录」用） */
   openPath: (path: string) => Promise<void>
+  /** 在系统默认浏览器中打开一个外部 URL（求 Star 弹窗用） */
+  openExternal: (url: string) => Promise<void>
   /** 弹目录框选择工作目录并持久化，返回新目录（取消返回 null） */
   chooseWorkspace: () => Promise<string | null>
   /** 弹目录框选择输出目录并持久化，返回新目录（取消返回 null） */

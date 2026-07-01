@@ -17,6 +17,7 @@ const api: Api = {
   getSettings: () => ipcRenderer.invoke('settings:get'),
   updateSettings: (partial) => ipcRenderer.invoke('settings:update', partial),
   openPath: (path: string) => ipcRenderer.invoke('shell:openPath', path),
+  openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url),
   chooseWorkspace: () => ipcRenderer.invoke('settings:chooseWorkspace'),
   chooseOutputDir: () => ipcRenderer.invoke('settings:chooseOutputDir'),
   openModFolder: () => ipcRenderer.invoke('mod:open'),

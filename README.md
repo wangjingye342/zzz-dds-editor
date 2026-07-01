@@ -2,6 +2,20 @@
 
 > 面向游戏 Mod 制作的 DDS 贴图图层编辑器
 
+---
+
+<div align="center">
+
+### ⭐ 如果这个工具帮到了你，请点右上角的 **Star** 支持一下！
+
+你的每一颗 Star 都是对作者最直接的鼓励，也能让更多做 mod 的人发现它 🙏
+
+[![Star this repo](https://img.shields.io/github/stars/wangjingye342/zzz-dds-editor?style=social)](https://github.com/wangjingye342/zzz-dds-editor)
+
+</div>
+
+---
+
 把素材图片拖到 DDS 贴图上、调好位置和角度、一键导出覆盖原文件——整个流程不离开一个窗口，编辑记录随时可续。
 
 ---

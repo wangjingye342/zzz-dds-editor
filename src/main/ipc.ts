@@ -42,6 +42,7 @@ export function registerIpc(): void {
   ipcMain.handle('settings:get', () => getSettings())
   ipcMain.handle('settings:update', (_e, partial: Partial<AppSettings>) => updateSettings(partial))
   ipcMain.handle('shell:openPath', (_e, p: string) => shell.openPath(p))
+  ipcMain.handle('shell:openExternal', (_e, url: string) => shell.openExternal(url))
 
   ipcMain.handle('settings:chooseWorkspace', async () => {
     const r = await dialog.showOpenDialog({
