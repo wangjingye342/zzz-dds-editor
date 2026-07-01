@@ -17,9 +17,22 @@ extraResources:
 win:
   icon: build/icon.ico
   target:
+    - target: nsis
+      arch:
+        - x64
     - target: portable
       arch:
         - x64
-  artifactName: ${productName}-${version}-portable.exe
+# 安装版（NSIS）：安装到本地常驻，启动不再自解压，冷启动更快
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ZZZ DDS 贴图编辑器
+  deleteAppDataOnUninstall: false
+  artifactName: ${productName}-${version}-setup.exe
+# 便携版：单文件免安装，双击即用（每次启动会自解压到临时目录）
 portable:
   artifactName: ${productName}-${version}-portable.exe
