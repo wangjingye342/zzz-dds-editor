@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss: http: https:"
+    />
+    <title>ZZZ DDS 贴图编辑器</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="toolbar">
+        <div class="tb-group">
+          <button id="btn-open-mod" class="primary" title="打开一个 mod 文件夹，从中挑选要编辑的 DDS">
+            打开 Mod 文件夹
+          </button>
+          <button id="btn-recent" title="打开最近编辑过的记录，继续编辑">最近记录</button>
+          <button
+            id="btn-open-dds"
+            class="ghost"
+            title="在当前 mod 里再打开另一张 DDS 编辑（与前一张各自独立记录、同处一个 mod，导出/压缩互不干扰）"
+          >
+            打开单个 DDS
+          </button>
+          <button id="btn-open-proj" class="ghost" title="打开已保存的工程文件继续编辑">打开工程</button>
+          <button id="btn-save-proj" title="保存编辑记录（已设工作目录时直接存到默认位置）">
+            保存记录
+          </button>
+        </div>
+        <div class="tb-group">
+          <button id="btn-perspective" class="ghost" title="对选中图层做四角透视变形" disabled>
+            四角变形
+          </button>
+          <button
+            id="btn-persp-cancel"
+            class="ghost"
+            title="放弃本次透视变形"
+            style="display: none"
+          >
+            取消
+          </button>
+        </div>
+        <div class="tb-spacer"></div>
+        <div class="tb-group">
+          <button id="btn-always-on-top" class="ghost" title="让程序窗口保持在其他普通窗口前面">
+            窗口置顶
+          </button>
+          <button id="btn-settings" class="ghost" title="设置工作目录、默认导出格式等">⚙ 设置</button>
+        </div>
+        <div class="tb-group">
+          <button id="btn-export" class="primary" title="合并所有图层并覆盖输出目录中的 DDS">
+            导出 DDS（覆盖输出副本）
+          </button>
+          <button id="btn-archive-mod" class="ghost" title="把输出目录中的当前 mod 副本压缩成带时间戳的 RAR" disabled>
+            压缩 RAR
+          </button>
+          <select id="export-format" class="tb-select" title="导出 DDS 的颜色 / 压缩方式">
+            <option value="auto">跟随原图格式（推荐 · 保持原大小）</option>
+            <option value="bc7-srgb">BC7 · sRGB（彩色最高质量 · 体积约 2× BC1）</option>
+            <option value="bc7-linear">BC7 · 线性（法线 / 数据）</option>
+            <option value="bc3-srgb">BC3 · sRGB（DXT5 · 带 alpha）</option>
+            <option value="bc1-srgb">BC1 · sRGB（DXT1 · 最小，无 alpha）</option>
+            <option value="bc5-linear">BC5 · 线性（法线）</option>
+          </select>
+        </div>
+        <div class="tb-group">
+          <button
+            id="btn-restore-prev"
+            class="ghost"
+            title="把 mod 里的贴图还原为上一次导出前的版本（撤销最近一次导出）"
+            disabled
+          >
+            恢复上一次
+          </button>
+          <button
+            id="btn-restore-orig"
+            class="ghost"
+            title="还原为最初的原始贴图，并清空当前所有图层（需确认）"
+            disabled
+          >
+            完全恢复
+          </button>
+        </div>
+      </header>
+
+      <main id="main">
+        <section id="canvas-panel">
+          <div id="canvas-host">
+            <div id="canvas-wrap">
+              <canvas id="fabric-canvas"></canvas>
+            </div>
+            <div id="canvas-empty" class="canvas-empty">
+              <p>点击左上角「打开 Mod 文件夹」，挑选要编辑的贴图</p>
+              <p class="dim">然后把右侧素材拖到这里成为新图层；编辑记录会自动保存到工作目录</p>
+            </div>
+          </div>
+          <div id="canvas-info" class="canvas-info">
+            <span id="canvas-info-text"></span>
+            <span class="zoom-ctrl">
+              <button id="btn-zoom-out" class="mini" title="缩小（滚轮向下）">－</button>
+              <button id="btn-zoom-fit" class="mini" title="适应窗口">适应</button>
+              <button id="btn-zoom-1" class="mini" title="1:1 实际像素">1:1</button>
+              <button id="btn-zoom-in" class="mini" title="放大（滚轮向上）">＋</button>
+            </span>
+          </div>
+        </section>
+
+        <aside id="side-panel">
+          <div id="library-section" class="side-block">
+            <div class="panel-head">
+              <span>待插入贴图</span>
+              <button id="btn-choose-folder" class="mini">选择文件夹</button>
+            </div>
+            <input id="library-search" class="search" placeholder="搜索素材…" />
+            <label id="mirror-row" class="mirror-row">
+              <input type="checkbox" id="mirror-insert" />
+              镜像插入（插入时水平翻转贴图）
+            </label>
+            <div id="library-grid" class="library-grid">
+              <div class="lib-hint">尚未选择素材文件夹</div>
+            </div>
+          </div>
+
+          <div id="layers-section" class="side-block">
+            <div class="panel-head">
+              <span>图层</span>
+              <button
+                id="btn-merge-layers"
+                class="mini"
+                title="把所有叠加图层合并为一个图层（图层多时可显著提速）"
+                disabled
+              >
+                一键合并所有图层
+              </button>
+            </div>
+            <div id="layer-list" class="layer-list"></div>
+            <div id="layer-props" class="layer-props"></div>
+          </div>
+        </aside>
+      </main>
+
+      <div id="status-row">
+        <div id="status" class="status-bar"></div>
+        <div id="progress" class="progress" hidden>
+          <span id="progress-label" class="progress-label"></span>
+          <span class="progress-track"><span id="progress-fill" class="progress-fill"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 选择贴图 / 最近记录 的模态层（由 modPicker.ts 驱动） -->
+    <div id="modal-overlay" class="modal-overlay" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <span id="picker-title">选择要编辑的贴图</span>
+          <button id="picker-close" class="mini">关闭</button>
+        </div>
+        <input id="picker-search" class="search" placeholder="搜索…" />
+        <div id="picker-body" class="picker-body grid"></div>
+        <div id="picker-foot" class="picker-foot"></div>
+      </div>
+    </div>
+
+    <!-- 设置面板（由 settingsPanel.ts 驱动） -->
+    <div id="settings-overlay" class="modal-overlay" style="display: none">
+      <div class="modal settings-modal">
+        <div class="modal-head">
+          <span>设置</span>
+          <button id="settings-close" class="mini">关闭</button>
+        </div>
+        <div class="settings-body">
+          <div class="set-row">
+            <div class="set-label">
+              工作目录
+              <span class="set-hint">编辑记录（未合并图层，可续编）默认保存到这里</span>
+            </div>
+            <div class="set-control">
+              <div id="set-workspace-path" class="set-path unset">未设置</div>
+              <div class="set-actions">
+                <button id="set-workspace-choose" class="mini">选择目录</button>
+                <button id="set-workspace-open" class="mini">打开</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
+              输出目录
+              <span class="set-hint">打开 mod 后会在这里生成带最外层文件夹的副本；导出 DDS 只覆盖这个副本</span>
+            </div>
+            <div class="set-control">
+              <div id="set-output-path" class="set-path unset">未设置</div>
+              <div class="set-actions">
+                <button id="set-output-choose" class="mini">选择目录</button>
+                <button id="set-output-open" class="mini">打开</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
+              默认导出格式
+              <span class="set-hint">启动时导出下拉框的默认选项</span>
+            </div>
+            <div class="set-control">
+              <select id="set-export-format" class="tb-select">
+                <option value="auto">跟随原图格式（推荐 · 保持原大小）</option>
+                <option value="bc7-srgb">BC7 · sRGB（彩色最高质量 · 体积约 2× BC1）</option>
+                <option value="bc7-linear">BC7 · 线性（法线 / 数据）</option>
+                <option value="bc3-srgb">BC3 · sRGB（DXT5 · 带 alpha）</option>
+                <option value="bc1-srgb">BC1 · sRGB（DXT1 · 最小，无 alpha）</option>
+                <option value="bc5-linear">BC5 · 线性（法线）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
+              自动保存
+              <span class="set-hint">编辑时自动把记录写入工作目录（关闭后需手动点「保存记录」）</span>
+            </div>
+            <div class="set-control">
+              <label class="set-switch"><input type="checkbox" id="set-autosave" /> 启用自动保存</label>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
+              素材文件夹
+              <span class="set-hint">记住后，启动软件时自动加载这个「待插入贴图」文件夹</span>
+            </div>
+            <div class="set-control">
+              <div id="set-library-path" class="set-path unset">未设置</div>
+              <div class="set-actions">
+                <button id="set-library-choose" class="mini">选择目录</button>
+                <button id="set-library-clear" class="mini">清除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

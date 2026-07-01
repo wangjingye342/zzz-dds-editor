@@ -1,0 +1,31 @@
+{
+  "name": "zzz-dds-editor",
+  "version": "0.1.0",
+  "description": "DDS 贴图图层编辑器 — 拖拽贴图、图层变换、四角透视变形、合并导出覆盖原 DDS",
+  "main": "./out/main/index.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "start": "electron-vite preview",
+    "build:win": "electron-vite build && electron-builder --win --x64",
+    "build:dir": "electron-vite build && electron-builder --dir",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "electron": "^42.5.1",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^7.3.6"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "dds-ktx-parser": "^1.0.1",
+    "fabric": "^6.9.1",
+    "fabric-warpvas": "^1.2.0"
+  }
+}

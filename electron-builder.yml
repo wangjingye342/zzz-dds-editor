@@ -1,0 +1,25 @@
+appId: com.zzzmod.ddseditor
+productName: ZZZ-DDS-Editor
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+# 把 Windows 版 texconv.exe 捆绑进安装包的 resources/texconv 目录
+extraResources:
+  - from: resources/texconv
+    to: texconv
+    filter:
+      - "**/*"
+  - from: build/icon.png
+    to: app-icon.png
+win:
+  icon: build/icon.ico
+  target:
+    - target: portable
+      arch:
+        - x64
+  artifactName: ${productName}-${version}-portable.exe
+portable:
+  artifactName: ${productName}-${version}-portable.exe

@@ -1,0 +1,19 @@
+# --- 依赖与构建产物 ---
+node_modules/
+out/
+dist/
+release/
+.vite/
+
+# 根目录打包出来的便携版 exe（体积大，走 GitHub Releases 分发，不进仓库）
+/*.exe
+
+# --- 日志与系统垃圾 ---
+*.log
+.DS_Store
+
+# --- 本地缓存与备份 ---
+*.zzzproj.cache/
+package-lock.json.bak
+
+# 注意：resources/texconv/texconv.exe 已纳入版本控制（导出 DDS 必需）
