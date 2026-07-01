@@ -8,7 +8,7 @@
 
 ### ⭐ 如果这个工具帮到了你，请点右上角的 **Star** 支持一下！
 
-你的每一颗 Star 都是对作者最直接的鼓励，也能让更多做 mod 的人发现它 🙏
+你的每一颗 Star 都是对作者最直接的鼓励，也能让更多的人发现它 🙏
 
 [![Star this repo](https://img.shields.io/github/stars/wangjingye342/zzz-dds-editor?style=social)](https://github.com/wangjingye342/zzz-dds-editor)
 
