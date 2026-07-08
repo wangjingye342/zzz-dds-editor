@@ -118,6 +118,34 @@ export interface RecentRecord {
   lastOpened: number
 }
 
+/** 模型库里的一个 mod 项：可能是压缩包文件，也可能是文件夹 */
+export interface ModItem {
+  /** 绝对路径（压缩包文件或文件夹） */
+  path: string
+  /** 显示名（压缩包去扩展名 / 文件夹名） */
+  name: string
+  kind: 'archive' | 'folder'
+  /** 已解析到的预览图绝对路径（同名 sidecar / 文件夹内 preview）；null 表示需要按需从压缩包内提取或用占位图 */
+  previewPath: string | null
+  /** 压缩包字节大小（文件夹为 0） */
+  size: number
+}
+
+/** 模型库里的一个模型（= 一个子文件夹，含该模型对象的多个 mod） */
+export interface ModelGroup {
+  /** 模型名（子文件夹名） */
+  name: string
+  /** 模型目录绝对路径 */
+  dir: string
+  mods: ModItem[]
+}
+
+/** 扫描模型库根目录的结果 */
+export interface ModelLibraryScan {
+  root: string
+  models: ModelGroup[]
+}
+
 export interface AppSettings {
   /** 用户指定的工作目录（编辑记录保存根目录） */
   workspaceDir: string | null
@@ -130,10 +158,16 @@ export interface AppSettings {
   defaultExportFormat: string
   /** 记住的素材文件夹，启动时自动加载（null 表示不自动加载） */
   libraryDir: string | null
+  /** 模型库根目录：按 模型→多个mod 组织，可浏览/预览/一键打开（null 表示未设置） */
+  modelLibraryDir: string | null
   /** 勾选后，点击/拖拽插入的新贴图自动水平镜像 */
   mirrorInsert: boolean
   /** 启动时的求 Star 弹窗：为 true 时不再弹出 */
   hideStarPrompt: boolean
+  /** 导出压缩包时间戳的位置：加在 mod 名后面(suffix，默认) 或前面(prefix) */
+  archiveTimestampPosition: 'prefix' | 'suffix'
+  /** 导出压缩包时间戳格式串（占位符 YYYY YY MM DD HH mm ss），默认 'YYYYMMDD_HHmmss' */
+  archiveTimestampFormat: string
 }
 
 /** 为某张 mod DDS 准备/解析编辑记录的结果 */
@@ -226,6 +260,16 @@ export interface Api {
   chooseWorkspace: () => Promise<string | null>
   /** 弹目录框选择输出目录并持久化，返回新目录（取消返回 null） */
   chooseOutputDir: () => Promise<string | null>
+  /** 弹目录框选择模型库根目录并持久化，返回新目录（取消返回 null） */
+  chooseModelLibrary: () => Promise<string | null>
+  /** 扫描已设的模型库根目录（未设或取消返回 null） */
+  scanModelLibrary: () => Promise<ModelLibraryScan | null>
+  /** 从压缩包内提取一张预览图到临时缓存，返回其绝对路径（无则 null） */
+  modlibExtractPreview: (archivePath: string) => Promise<string | null>
+  /** 打开模型库里的一个 mod：压缩包先解压到暂存目录，再扫描其中 DDS，返回 ModScan */
+  modlibPrepareMod: (entryPath: string, kind: 'archive' | 'folder') => Promise<ModScan>
+  /** 为某个 mod 项手动指定预览图（弹图片框，拷为同名 sidecar），返回新预览图路径（取消返回 null） */
+  modlibAssignPreview: (entryPath: string) => Promise<string | null>
   /** 弹目录框选择 mod 文件夹并扫描其中 DDS（取消返回 null） */
   openModFolder: () => Promise<ModScan | null>
   /** 为某张 mod DDS 准备/解析编辑记录（存在则返回工程续编，否则建副本待新建） */

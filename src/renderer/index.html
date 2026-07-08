@@ -18,6 +18,12 @@
           </button>
           <button id="btn-recent" title="打开最近编辑过的记录，继续编辑">最近记录</button>
           <button
+            id="btn-modellib"
+            title="从模型库浏览同一模型的多个 mod（压缩包/文件夹），带预览、一键打开切换"
+          >
+            模型库
+          </button>
+          <button
             id="btn-open-dds"
             class="ghost"
             title="在当前 mod 里再打开另一张 DDS 编辑（与前一张各自独立记录、同处一个 mod，导出/压缩互不干扰）"
@@ -201,6 +207,22 @@
 
           <div class="set-row">
             <div class="set-label">
+              模型库目录
+              <span class="set-hint"
+                >「模型库」面板从这里读取：按 模型/各个mod（压缩包或文件夹）组织，可预览并一键打开</span
+              >
+            </div>
+            <div class="set-control">
+              <div id="set-modellib-path" class="set-path unset">未设置</div>
+              <div class="set-actions">
+                <button id="set-modellib-choose" class="mini">选择目录</button>
+                <button id="set-modellib-open" class="mini">打开</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
               默认导出格式
               <span class="set-hint">启动时导出下拉框的默认选项</span>
             </div>
@@ -213,6 +235,33 @@
                 <option value="bc1-srgb">BC1 · sRGB（DXT1 · 最小，无 alpha）</option>
                 <option value="bc5-linear">BC5 · 线性（法线）</option>
               </select>
+            </div>
+          </div>
+
+          <div class="set-row">
+            <div class="set-label">
+              压缩包时间戳
+              <span class="set-hint"
+                >「压缩 RAR」时给文件名加的时间戳：可选加在 mod 名前面还是后面，格式可自定义</span
+              >
+            </div>
+            <div class="set-control">
+              <select id="set-archive-ts-position" class="tb-select">
+                <option value="suffix">加在 mod 名【后面】：MyMod_时间戳.rar</option>
+                <option value="prefix">加在 mod 名【前面】：时间戳_MyMod.rar</option>
+              </select>
+              <input
+                id="set-archive-ts-format"
+                class="set-input"
+                type="text"
+                spellcheck="false"
+                placeholder="YYYYMMDD_HHmmss"
+              />
+              <span class="set-hint"
+                >占位符：<code>YYYY</code> 年 <code>YY</code> 两位年 <code>MM</code> 月
+                <code>DD</code> 日 <code>HH</code> 时 <code>mm</code> 分 <code>ss</code> 秒；其余字符原样保留</span
+              >
+              <div id="set-archive-ts-preview" class="set-preview"></div>
             </div>
           </div>
 
@@ -240,6 +289,25 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- 模型库面板（由 modLibraryPanel.ts 驱动） -->
+    <div id="modellib-overlay" class="modal-overlay" style="display: none">
+      <div class="modal modellib-modal">
+        <div class="modal-head">
+          <span>模型库 — 浏览同一模型的多个 mod</span>
+          <div class="ml-head-actions">
+            <button id="ml-choose" class="mini">选择模型库目录</button>
+            <button id="ml-refresh" class="mini">刷新</button>
+            <button id="modellib-close" class="mini">关闭</button>
+          </div>
+        </div>
+        <div class="ml-body">
+          <div id="ml-models" class="ml-models"></div>
+          <div id="ml-mods" class="ml-mods"></div>
+        </div>
+        <div id="ml-foot" class="picker-foot"></div>
       </div>
     </div>
 

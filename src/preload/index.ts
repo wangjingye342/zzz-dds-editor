@@ -20,6 +20,13 @@ const api: Api = {
   openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url),
   chooseWorkspace: () => ipcRenderer.invoke('settings:chooseWorkspace'),
   chooseOutputDir: () => ipcRenderer.invoke('settings:chooseOutputDir'),
+  chooseModelLibrary: () => ipcRenderer.invoke('settings:chooseModelLibrary'),
+  scanModelLibrary: () => ipcRenderer.invoke('modlib:scan'),
+  modlibExtractPreview: (archivePath: string) =>
+    ipcRenderer.invoke('modlib:extractPreview', archivePath),
+  modlibPrepareMod: (entryPath: string, kind: 'archive' | 'folder') =>
+    ipcRenderer.invoke('modlib:prepareMod', entryPath, kind),
+  modlibAssignPreview: (entryPath: string) => ipcRenderer.invoke('modlib:assignPreview', entryPath),
   openModFolder: () => ipcRenderer.invoke('mod:open'),
   prepareRecord: (modRoot: string, ddsPath: string) =>
     ipcRenderer.invoke('record:prepare', modRoot, ddsPath),

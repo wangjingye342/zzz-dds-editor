@@ -17,10 +17,27 @@ function sanitizeSegment(name: string): string {
   return name.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').replace(/^[\s.]+|[\s.]+$/g, '') || 'mod'
 }
 
-function stamp(): string {
-  const d = new Date()
+/** 按用户自定义格式串生成时间戳。占位符：YYYY YY MM DD HH mm ss */
+function formatStamp(pattern: string, d: Date): string {
   const pad = (n: number): string => String(n).padStart(2, '0')
-  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+  const map: Record<string, string> = {
+    YYYY: String(d.getFullYear()),
+    YY: pad(d.getFullYear() % 100),
+    MM: pad(d.getMonth() + 1),
+    DD: pad(d.getDate()),
+    HH: pad(d.getHours()),
+    mm: pad(d.getMinutes()),
+    ss: pad(d.getSeconds())
+  }
+  return pattern.replace(/YYYY|YY|MM|DD|HH|mm|ss/g, (t) => map[t])
+}
+
+/** 文件名安全化：替换 Windows 文件名非法字符，折叠空白 */
+function safeForFilename(s: string): string {
+  return s
+    .replace(/[<>:"/\\|?*\x00-\x1f]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function sameOrInside(parent: string, child: string): boolean {
@@ -170,7 +187,7 @@ function findRar(): string | null {
 }
 
 export async function archiveOutputMod(modName: string): Promise<ArchiveResult> {
-  const { outputDir } = await getSettings()
+  const { outputDir, archiveTimestampPosition, archiveTimestampFormat } = await getSettings()
   if (!outputDir) return { ok: false, message: '尚未设置输出目录' }
   const folderName = sanitizeSegment(modName)
   const outputModRoot = join(outputDir, folderName)
@@ -181,7 +198,12 @@ export async function archiveOutputMod(modName: string): Promise<ArchiveResult> 
   if (!rar) {
     return { ok: false, message: '未找到 WinRAR/Rar.exe，请先安装 WinRAR 后再压缩' }
   }
-  const archivePath = join(outputDir, `${folderName}_${stamp()}.rar`)
+  // 按设置里的格式/位置拼接压缩包名；格式清空或产出空串时回退到默认，避免同名互相覆盖
+  const now = new Date()
+  let ts = safeForFilename(formatStamp(archiveTimestampFormat || 'YYYYMMDD_HHmmss', now))
+  if (!ts) ts = formatStamp('YYYYMMDD_HHmmss', now)
+  const stem = archiveTimestampPosition === 'prefix' ? `${ts}_${folderName}` : `${folderName}_${ts}`
+  const archivePath = join(outputDir, `${stem}.rar`)
   try {
     await execFileAsync(rar, ['a', '-r', '-idq', archivePath, folderName], {
       cwd: outputDir,

@@ -13,8 +13,11 @@ const DEFAULTS: AppSettings = {
   autoSave: true,
   defaultExportFormat: 'auto',
   libraryDir: null,
+  modelLibraryDir: null,
   mirrorInsert: false,
-  hideStarPrompt: false
+  hideStarPrompt: false,
+  archiveTimestampPosition: 'suffix',
+  archiveTimestampFormat: 'YYYYMMDD_HHmmss'
 }
 const RECENT_LIMIT = 30
 
@@ -35,9 +38,18 @@ export async function getSettings(): Promise<AppSettings> {
           ? raw.defaultExportFormat
           : DEFAULTS.defaultExportFormat,
       libraryDir: typeof raw.libraryDir === 'string' ? raw.libraryDir : null,
+      modelLibraryDir: typeof raw.modelLibraryDir === 'string' ? raw.modelLibraryDir : null,
       mirrorInsert: typeof raw.mirrorInsert === 'boolean' ? raw.mirrorInsert : DEFAULTS.mirrorInsert,
       hideStarPrompt:
-        typeof raw.hideStarPrompt === 'boolean' ? raw.hideStarPrompt : DEFAULTS.hideStarPrompt
+        typeof raw.hideStarPrompt === 'boolean' ? raw.hideStarPrompt : DEFAULTS.hideStarPrompt,
+      archiveTimestampPosition:
+        raw.archiveTimestampPosition === 'prefix' || raw.archiveTimestampPosition === 'suffix'
+          ? raw.archiveTimestampPosition
+          : DEFAULTS.archiveTimestampPosition,
+      archiveTimestampFormat:
+        typeof raw.archiveTimestampFormat === 'string' && raw.archiveTimestampFormat.trim()
+          ? raw.archiveTimestampFormat
+          : DEFAULTS.archiveTimestampFormat
     }
   } catch {
     return { ...DEFAULTS }

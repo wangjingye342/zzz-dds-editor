@@ -12,6 +12,11 @@ extraResources:
     to: texconv
     filter:
       - "**/*"
+  # 内置 7-Zip（7z.exe + 7z.dll，含 RAR 编解码），用于解压模型库里的 mod 压缩包
+  - from: resources/7zip
+    to: 7zip
+    filter:
+      - "**/*"
   - from: build/icon.png
     to: app-icon.png
 win:

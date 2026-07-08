@@ -17,6 +17,12 @@ import {
   backupStatus,
   restoreFile
 } from './records'
+import {
+  scanModelLibrary,
+  extractPreviewFromArchive,
+  prepareModRootFromEntry,
+  assignPreview
+} from './modLibrary'
 import type { ExportRequest, ExportResult, ProjectFile, RecentRecord, AppSettings } from '../shared/types'
 
 export function registerIpc(): void {
@@ -71,6 +77,33 @@ export function registerIpc(): void {
     })
     if (r.canceled || r.filePaths.length === 0) return null
     return scanModDds(r.filePaths[0])
+  })
+
+  // ---- 模型库：模型→多个mod 浏览、预览、一键打开（压缩包自动解压到暂存） ----
+  ipcMain.handle('settings:chooseModelLibrary', async () => {
+    const r = await dialog.showOpenDialog({
+      title: '选择模型库根目录（里面按 模型/各个mod压缩包 组织）',
+      properties: ['openDirectory']
+    })
+    if (r.canceled || r.filePaths.length === 0) return null
+    await updateSettings({ modelLibraryDir: r.filePaths[0] })
+    return r.filePaths[0]
+  })
+  ipcMain.handle('modlib:scan', () => scanModelLibrary())
+  ipcMain.handle('modlib:extractPreview', (_e, archivePath: string) =>
+    extractPreviewFromArchive(archivePath)
+  )
+  ipcMain.handle('modlib:prepareMod', (_e, entryPath: string, kind: 'archive' | 'folder') =>
+    prepareModRootFromEntry(entryPath, kind)
+  )
+  ipcMain.handle('modlib:assignPreview', async (_e, entryPath: string) => {
+    const r = await dialog.showOpenDialog({
+      title: '选择一张图片作为该 mod 的预览图',
+      filters: [{ name: '图片', extensions: ['png', 'jpg', 'jpeg', 'webp', 'bmp'] }],
+      properties: ['openFile']
+    })
+    if (r.canceled || r.filePaths.length === 0) return null
+    return assignPreview(entryPath, r.filePaths[0])
   })
 
   ipcMain.handle('record:prepare', (_e, modRoot: string, ddsPath: string) =>

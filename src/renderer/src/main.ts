@@ -6,6 +6,7 @@ import { setupLayersPanel } from './layersPanel'
 import { showDdsPicker, showRecentPicker } from './modPicker'
 import { setupSettingsPanel } from './settingsPanel'
 import { setupStarPrompt } from './starPrompt'
+import { setupModLibraryPanel } from './modLibraryPanel'
 import { ddsToDataURL, ddsToPreviewCanvas, ddsToOpaqueCanvasWithAlpha } from './ddsDecode'
 import { progress } from './progress'
 import type { DdsMeta, ProjectFile, DdsEntry, ModScan, RecentRecord } from '@shared/types'
@@ -321,6 +322,11 @@ async function openMod(): Promise<void> {
     setStatus('已取消')
     return
   }
+  await pickAndOpen(scan)
+}
+
+/** 从一个 ModScan 里选一张 DDS 并打开编辑（打开 Mod 文件夹 / 模型库共用） */
+async function pickAndOpen(scan: ModScan): Promise<void> {
   if (scan.files.length === 0) {
     setStatus(`「${scan.name}」里没有找到 DDS 文件`, 'err')
     return
@@ -332,6 +338,20 @@ async function openMod(): Promise<void> {
   }
   await openModDds(scan, entry)
 }
+
+// ---------- 模型库：浏览同一模型的多个 mod（压缩包/文件夹）、预览、一键打开 ----------
+const modLib = setupModLibraryPanel({ openScan: pickAndOpen, setStatus })
+$('btn-modellib').addEventListener('click', async () => {
+  if (!(await ensureWorkspace())) {
+    setStatus('已取消：需要先设置一个工作目录用于保存编辑记录', 'err')
+    return
+  }
+  if (!(await ensureOutputDir())) {
+    setStatus('已取消：需要先设置一个输出目录用于保存 mod 副本', 'err')
+    return
+  }
+  await modLib.open()
+})
 
 async function openModDds(scan: ModScan, entry: DdsEntry): Promise<void> {
   await flushPendingSave() // 切换前先保存当前这张，避免丢失且不与新记录混淆
