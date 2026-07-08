@@ -190,9 +190,11 @@ npm run dev
 bash build.sh
 ```
 
-构建完成后，会同时产出两种安装包：
-- 根目录：`ZZZ-DDS-Editor-便携版.exe` 和 `ZZZ-DDS-Editor-安装版.exe`（固定名，方便直接分发）
-- `release/`：`ZZZ-DDS-Editor-<版本>-portable.exe` 和 `ZZZ-DDS-Editor-<版本>-setup.exe`（带版本号，用于发 Release）
+构建完成后，会同时产出两种安装包（文件名都带 `package.json` 里的版本号）：
+- 根目录：`ZZZ-DDS-Editor-安装版-v<版本>.exe` 和 `ZZZ-DDS-Editor-便携版-v<版本>.exe`
+- `release/`：`ZZZ-DDS-Editor-<版本>-setup.exe` 和 `ZZZ-DDS-Editor-<版本>-portable.exe`
+
+> **升级版本号**：先改 `package.json` 的 `"version"`，再跑 `bash build.sh`——文件名会自动带上新版本号，根目录里旧版本号的 exe 会被清掉（正在运行而占用的会跳过）。
 
 > **注意**：构建前请先关闭正在运行的编辑器，否则根目录同名 exe 被占用，`build.sh` 最后的复制步骤会失败（新构建仍保留在 `release/` 目录）。
 
