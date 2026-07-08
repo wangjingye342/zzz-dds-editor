@@ -1,6 +1,6 @@
 {
   "name": "zzz-dds-editor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DDS 贴图图层编辑器 — 拖拽贴图、图层变换、四角透视变形、合并导出覆盖原 DDS",
   "main": "./out/main/index.js",
   "author": "",
